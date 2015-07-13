@@ -1,0 +1,9 @@
+body{
+	background-image : url(images/bruno-mars.png) 
+}
+main{
+	margin-top: 200px;
+	margin-left: 30px;
+	background-color: #00ff00;
+	opacity:0.9;
+}

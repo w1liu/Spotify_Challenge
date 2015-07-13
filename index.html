@@ -1,0 +1,70 @@
+<html>
+<head>
+<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>  
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+ <link rel="stylesheet" href="sp.css">
+</head>
+<body>
+<main>
+<h2>Spotify Challange</h2>
+
+<form ng-app="myApp" ng-controller="validateCtrl" 
+name="myForm" novalidate>
+
+<p>Artist:<br>
+<input id = "name" type="text" name="artist" ng-model = "artist" ng-minlength="2">
+<span style="color:red" ng-show="myForm.artist.$dirty && myForm.artist.$invalid">
+<span ng-show="myForm.artist.$error.minlength">Please tell me more.</span>
+</span>
+</p>
+
+<input type="submit"
+ng-disabled=" myForm.artist.$invalid" ng-click="search()"></input>
+<p ng-show="intro">
+	This website allows you to see how an artist's popularity connects to the number of</br>
+	times that he/she has worked with other artists, and lists the collaborated songs. 
+</p>
+<div ng-show="ifShow">
+	<img src={{image.url}} alt="images/no.jpg" style="width"+{{image.width}}+";height"+{{image.height}}>
+	{{'Artist Popularity: '+ popularity}}</br>
+	{{'Artist Has Worked With '+count+' Other Artists'}}
+	<ul>
+		<ol ng-repeat = "names in feat | orderBy:'-popularity'">{{names.name}}, Popularity:{{names.popularity}} <a href={{names.external_urls.spotify}}>Listen</a>
+		</ol>
+	</ul>
+
+</div>>
+</form>
+
+<script>
+var app = angular.module('myApp', []);
+
+app.controller('validateCtrl', function($scope, $http) {
+	$scope.ifShow = false
+	$scope.intro=true
+	$scope.search = function() {
+		$http.get("https://api.spotify.com/v1/search?type=artist&query="+$scope.artist).
+		success(function(data) {
+			$scope.ifShow = true
+			$scope.intro=false
+			$scope.items=data.artists.items
+			$scope.count = 0
+			$scope.popularity = $scope.items[0].popularity
+			$scope.image = $scope.items[0].images[0]
+			$scope.feat=[]
+			$scope.items.map(function(d) {
+				if(d.name.toLowerCase().search('&')>=1||d.name.toLowerCase().search('feat')>=1) {
+					$scope.count++
+					$scope.feat.push(d)
+				}
+			})
+		}).error(function(){
+			alert('No!!!!')
+		})
+
+}
+})
+</script>
+</main>
+</body>
+</html>
